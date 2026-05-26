@@ -97,10 +97,11 @@ const ReportsPage = () => {
         <p className="text-sm text-gray-500 mt-1">Generate and export business reports</p>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 inline-flex">
+      {/* Tab bar — stacks vertically on mobile (flex-col), row on sm: screens (sm:flex-row); full width on mobile, auto width on sm+ */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-1.5 flex flex-col sm:flex-row w-full sm:w-auto">
         {tabs.map((tab) => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+            className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full sm:w-auto ${
               activeTab === tab.id
                 ? 'bg-indigo-600 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -113,17 +114,20 @@ const ReportsPage = () => {
 
       {activeTab === 'sales' && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {/* Section title — flexbox aligns accent bar and heading */}
           <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />
             Daily Sales Report
           </h2>
+          {/* Controls — stacks vertically on mobile, row on sm: with bottom alignment */}
           <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Select Date</label>
               <input type="date" value={date} onChange={(e) => setDate(e.target.value)}
                 className="px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" />
             </div>
-            <button onClick={fetchSalesReport} disabled={loadingSales}
+            {/* Generate button — flexbox centers icon and label */}
+          <button onClick={fetchSalesReport} disabled={loadingSales}
               className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-600/20 text-sm">
               {loadingSales && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
               {loadingSales ? 'Generating...' : 'Generate Report'}
@@ -151,10 +155,10 @@ const ReportsPage = () => {
                 <table className="min-w-full">
                   <thead>
                     <tr className="bg-gray-50/80">
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Quantity</th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Unit Price</th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Quantity</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Unit Price</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -167,10 +171,10 @@ const ReportsPage = () => {
                     ) : (
                       salesReport.sales.map((s) => (
                         <tr key={s._id} className="hover:bg-gray-50/60 even:bg-gray-50/30">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF((s.totalPrice || 0) / (s.quantity || 1))}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF(s.totalPrice)}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF((s.totalPrice || 0) / (s.quantity || 1))}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF(s.totalPrice)}</td>
                         </tr>
                       ))
                     )}
@@ -179,28 +183,30 @@ const ReportsPage = () => {
               </div>
 
               {salesReport.sales.length > 0 && (
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => exportPDF('Daily Sales Report', salesReport.sales.map((s) => ({
-                    'Product Name': s.product?.name || 'Deleted',
-                    'Sold Qty': s.quantity,
-                    'Unit Price': formatRWF((s.totalPrice || 0) / (s.quantity || 1)),
-                    'Total Price': formatRWF(s.totalPrice),
-                  })), ['Product Name', 'Sold Qty', 'Unit Price', 'Total Price'])}
-                    className="bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                    Export PDF
-                  </button>
-                  <button onClick={() => exportCSV(salesReport.sales.map((s) => ({
-                    'Product Name': s.product?.name || 'Deleted',
-                    'Sold Qty': s.quantity,
-                    'Unit Price': formatRWF((s.totalPrice || 0) / (s.quantity || 1)),
-                    'Total Price': formatRWF(s.totalPrice),
-                  })), `sales-report-${salesReport.date}`)}
-                    className="bg-white border-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                    Export CSV
-                  </button>
-                </div>
+              <div className="flex flex-wrap gap-3 pt-2">
+                {/* Export PDF button — flexbox centers icon and label */}
+                <button onClick={() => exportPDF('Daily Sales Report', salesReport.sales.map((s) => ({
+                  'Product Name': s.product?.name || 'Deleted',
+                  'Sold Qty': s.quantity,
+                  'Unit Price': formatRWF((s.totalPrice || 0) / (s.quantity || 1)),
+                  'Total Price': formatRWF(s.totalPrice),
+                })), ['Product Name', 'Sold Qty', 'Unit Price', 'Total Price'])}
+                  className="bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                  Export PDF
+                </button>
+                {/* Export CSV button — flexbox centers icon and label */}
+                <button onClick={() => exportCSV(salesReport.sales.map((s) => ({
+                  'Product Name': s.product?.name || 'Deleted',
+                  'Sold Qty': s.quantity,
+                  'Unit Price': formatRWF((s.totalPrice || 0) / (s.quantity || 1)),
+                  'Total Price': formatRWF(s.totalPrice),
+                })), `sales-report-${salesReport.date}`)}
+                  className="bg-white border-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Export CSV
+                </button>
+              </div>
               )}
             </div>
           ) : (
@@ -215,10 +221,12 @@ const ReportsPage = () => {
 
       {activeTab === 'stock' && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {/* Section title — flexbox aligns accent bar and heading */}
           <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />
             Stock Status Report
           </h2>
+          {/* Generate button — flexbox centers icon and label */}
           <button onClick={fetchStockReport} disabled={loadingStock}
             className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-600/20 text-sm mb-6">
             {loadingStock && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
@@ -246,9 +254,9 @@ const ReportsPage = () => {
                 <table className="min-w-full">
                   <thead>
                     <tr className="bg-gray-50/80">
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stored Qty</th>
-                      <th className="px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Stored Qty</th>
+                      <th className="px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
@@ -261,9 +269,9 @@ const ReportsPage = () => {
                     ) : (
                       stockReport.stockStatuses.map((s) => (
                         <tr key={s._id} className="hover:bg-gray-50/60 even:bg-gray-50/30">
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${
                               s.status === 'inStock' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' :
                               s.status === 'lowStock' ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' :

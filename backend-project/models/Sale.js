@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const saleSchema = new mongoose.Schema(
   {
     product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      type: mongoose.Schema.Types.ObjectId,  // Foreign key
+      ref: 'Product',                         // References the Product model
       required: [true, 'Product is required'],
     },
     quantity: {
@@ -19,7 +19,17 @@ const saleSchema = new mongoose.Schema(
     },
     saleDate: {
       type: Date,
-      default: Date.now,
+      default: () => {
+        const d = new Date();
+        d.setHours(2, 0, 0, 0);
+        return d;
+      },
+      validate: {
+        validator: function (v) {
+          return v <= new Date();
+        },
+        message: 'Sale date cannot be in the future',
+      },
     },
     customerName: {
       type: String,

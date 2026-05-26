@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { logout } from '../utils/auth';
 import toast from 'react-hot-toast';
 
@@ -12,14 +12,13 @@ const navItems = [
 ];
 
 const Navbar = ({ children }) => {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
       logout();
       toast.success('Logged out successfully');
-      navigate('/login');
+      window.location.href = '/login';
     }
   };
 
@@ -32,11 +31,14 @@ const Navbar = ({ children }) => {
 
   return (
     <>
+      {/* Mobile overlay — visible only below md breakpoint (768px), hidden on larger screens via md:hidden */}
       {open && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden" onClick={() => setOpen(false)} />
       )}
 
+      {/* Sidebar — uses Tailwind flexbox column layout (flex flex-col); slides off-screen on mobile via -translate-x-full, always visible at md+ via md:translate-x-0 */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-60 bg-gradient-to-b from-indigo-950 via-indigo-900 to-indigo-950 text-white flex flex-col transform transition-transform duration-300 ease-out md:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
+        {/* Logo area — horizontally centered with flex; prevented from shrinking with flex-shrink-0 */}
         <div className="flex items-center gap-3 h-16 px-5 border-b border-indigo-800/30 flex-shrink-0">
           <div className="w-9 h-9 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <span className="text-white font-bold text-sm">D</span>
@@ -47,6 +49,7 @@ const Navbar = ({ children }) => {
           </div>
         </div>
 
+        {/* Navigation — flex-1 takes remaining vertical space, pushing logout to bottom */}
         <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
@@ -69,6 +72,7 @@ const Navbar = ({ children }) => {
           ))}
         </nav>
 
+        {/* Logout section — flex-shrink-0 prevents it from being compressed */}
         <div className="px-3 py-3 border-t border-indigo-800/30 flex-shrink-0">
           <button onClick={handleLogout}
             className="flex items-center gap-3 w-full px-4 py-2.5 rounded-xl text-sm font-medium text-indigo-200/60 hover:bg-red-500/10 hover:text-red-300 transition-all duration-150">
@@ -80,8 +84,11 @@ const Navbar = ({ children }) => {
         </div>
       </aside>
 
+      {/* Main content area — uses flexbox column layout; md:ml-60 offsets sidebar width on large screens */}
       <div className="md:ml-60 min-h-screen bg-gray-50 flex flex-col">
+        {/* Header — flexbox row with space-between; md:hidden hides hamburger on large screens; sm:px-6 increases padding on small screens+ */}
         <header className="bg-white border-b border-gray-200 h-14 flex items-center justify-between px-4 sm:px-6 flex-shrink-0">
+          {/* Hamburger menu button — hidden on md+ screens via md:hidden */}
           <button className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors" onClick={() => setOpen(true)}>
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -94,6 +101,7 @@ const Navbar = ({ children }) => {
             Logout
           </button>
         </header>
+        {/* Main content — flex-1 fills remaining height; responsive padding with sm: and lg: breakpoints */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
           {children}
         </main>

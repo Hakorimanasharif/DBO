@@ -78,21 +78,26 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header row — flexbox justifies title left and status badge right; hidden sm:flex hides badge on mobile */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
           <p className="text-gray-500 mt-1">Welcome back, <span className="font-semibold text-gray-700">{user?.username || 'User'}</span></p>
         </div>
+        {/* Status badge — hidden on mobile (hidden), shown as flex row at sm: breakpoint (sm:flex) */}
         <div className="hidden sm:flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
           <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
           <span className="text-sm text-gray-500">System active</span>
         </div>
       </div>
 
+      {/* Stats cards grid — responsive grid: 1 col mobile, 2 cols at sm:, 4 cols at lg: */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card) => (
           <div key={card.label} className="group bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
+            {/* Card header — flexbox row spaces icon left and accent bar right */}
             <div className="flex items-start justify-between mb-4">
+              {/* Icon — flexbox centers the emoji inside the circle */}
               <div className={`${card.light} w-11 h-11 rounded-xl flex items-center justify-center text-lg`}>
                 {card.icon}
               </div>
@@ -105,6 +110,7 @@ const Dashboard = () => {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        {/* Section header — flexbox row spaces title left and badge right */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-gray-900">Recent Sales</h2>
           <span className="text-xs text-gray-400 bg-gray-50 px-3 py-1 rounded-full">Last 5 transactions</span>
@@ -120,28 +126,28 @@ const Dashboard = () => {
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Time</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Quantity</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Time</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Product</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Quantity</th>
+                  <th className="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Total</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {recentSales.map((s, i) => (
                   <tr key={s._id} className="hover:bg-gray-50/80 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                         {new Date(s.saleDate).toLocaleTimeString()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-900">{s.product?.name || 'Deleted'}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <span className="text-sm text-gray-600">{s.quantity}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-semibold text-gray-900">{formatRWF(s.totalPrice)}</span>
                     </td>
                   </tr>

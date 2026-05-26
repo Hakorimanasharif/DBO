@@ -1,6 +1,7 @@
 const Sale = require('../models/Sale');
 const Product = require('../models/Product');
 
+// READ all sales (populated with product, sorted by date)
 const getSales = async (req, res) => {
   try {
     const sales = await Sale.find().populate('product').sort({ saleDate: -1 });
@@ -10,6 +11,7 @@ const getSales = async (req, res) => {
   }
 };
 
+// READ single sale by ID
 const getSaleById = async (req, res) => {
   try {
     const sale = await Sale.findById(req.params.id).populate('product');
@@ -22,9 +24,10 @@ const getSaleById = async (req, res) => {
   }
 };
 
+// CREATE a new sale (validates stock, calculates total, decrements inventory)
 const createSale = async (req, res) => {
   try {
-    const { product: productId, quantity, customerName } = req.body;
+    const { product: productId, quantity, customerName, saleDate } = req.body;
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -35,6 +38,10 @@ const createSale = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient stock' });
     }
 
+    if (saleDate && new Date(saleDate) > new Date()) {
+      return res.status(400).json({ message: 'Sale date cannot be in the future' });
+    }
+
     const totalPrice = product.price * quantity;
 
     const sale = await Sale.create({
@@ -42,6 +49,7 @@ const createSale = async (req, res) => {
       quantity,
       totalPrice,
       customerName,
+      ...(saleDate && { saleDate }),
     });
 
     product.stockQuantity -= quantity;
@@ -54,6 +62,7 @@ const createSale = async (req, res) => {
   }
 };
 
+// UPDATE a sale by ID
 const updateSale = async (req, res) => {
   try {
     const sale = await Sale.findByIdAndUpdate(req.params.id, req.body, {
@@ -69,6 +78,7 @@ const updateSale = async (req, res) => {
   }
 };
 
+// DELETE a sale by ID
 const deleteSale = async (req, res) => {
   try {
     const sale = await Sale.findByIdAndDelete(req.params.id);

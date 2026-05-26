@@ -159,11 +159,13 @@ const StockPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header — stacks vertically on mobile, row on sm: screens */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Stock Status</h1>
           <p className="text-sm text-gray-500 mt-1">{stockItems.length} product{stockItems.length !== 1 ? 's' : ''} tracked</p>
         </div>
+        {/* Action button — flexbox centers icon and label */}
         <button onClick={() => setShowForm(!showForm)}
           className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-600/20 self-start text-sm">
           {showForm ? <><span className="text-lg leading-none">✕</span> Cancel</> : <><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg> Add Stock</>}
@@ -172,6 +174,7 @@ const StockPage = () => {
 
       {showForm && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {/* Section title — flexbox aligns accent bar and heading */}
           <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />New Stock Entry
           </h2>
@@ -191,7 +194,7 @@ const StockPage = () => {
             </div>
             <div className="sm:col-span-3">
               <button type="submit" disabled={submitting}
-                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
+                className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
                 {submitting && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
                 {submitting ? 'Saving...' : 'Add Stock Status'}
               </button>
@@ -222,7 +225,7 @@ const StockPage = () => {
                   { key: null, label: 'Actions' },
                 ].map((col) => (
                   <th key={col.key || col.label}
-                    className={`px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
+                    className={`px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
                     onClick={() => col.key && handleSort(col.key)}>
                     <span className="inline-flex items-center gap-0.5">{col.label}{col.key && <SortIcon field={col.key} />}</span>
                   </th>
@@ -243,12 +246,13 @@ const StockPage = () => {
                   const badge = getStatusBadge(item.stats.remaining);
                   return (
                     <tr key={item._id} className="hover:bg-gray-50/60 transition-colors even:bg-gray-50/30">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{item.product?.name || 'Deleted'}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stats.available}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stats.soldQty}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">{item.stats.remaining}</td>
-                      <td className="px-6 py-4 whitespace-nowrap"><span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${badge.class}`}>{badge.label}</span></td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{item.product?.name || 'Deleted'}</td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stats.available}</td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{item.stats.soldQty}</td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium">{item.stats.remaining}</td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap"><span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-medium ${badge.class}`}>{badge.label}</span></td>
+                      <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                        {/* Action buttons — flexbox row groups edit/view/delete icons */}
                         <div className="flex items-center gap-1.5">
                           <button onClick={() => { setEditModal(item); setEditName(item.product?.name || ''); setEditCategory(item.product?.category || 'General'); setEditQuantity(item.stats.available); }}
                             className="p-2 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all" title="Edit">
@@ -271,6 +275,7 @@ const StockPage = () => {
             </tbody>
           </table>
         </div>
+        {/* Pagination — flexbox spaces page info left and buttons right */}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
             <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
@@ -284,9 +289,11 @@ const StockPage = () => {
         )}
       </div>
 
+      {/* Modal overlay — flexbox centers the modal card on screen */}
       {editModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setEditModal(null)}>
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md animate-[scaleIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
+            {/* Modal title — flexbox aligns icon bar and heading */}
             <h3 className="text-lg font-semibold text-gray-900 mb-1 flex items-center gap-2">
               <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />Edit Stock Item
             </h3>
@@ -310,6 +317,7 @@ const StockPage = () => {
                   className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" autoFocus />
               </div>
             </div>
+            {/* Modal actions — flexbox right-aligns buttons */}
             <div className="flex justify-end gap-3 mt-6">
               <button onClick={() => setEditModal(null)} className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
               <button onClick={() => handleEdit(editModal._id)} className="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-xl text-sm font-medium hover:from-indigo-500 hover:to-indigo-600 transition-all shadow-lg shadow-indigo-600/20">Update</button>
@@ -318,6 +326,7 @@ const StockPage = () => {
         </div>
       )}
 
+      {/* Detail modal — flexbox centers modal */}
       {detailModal && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDetailModal(null)}>
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg animate-[scaleIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
@@ -336,6 +345,7 @@ const StockPage = () => {
                   badgeClass: detailModal.status === 'inStock' ? 'bg-emerald-50 text-emerald-700' : detailModal.status === 'lowStock' ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700' },
                 { label: 'Last Updated', value: new Date(detailModal.updatedAt).toLocaleString() },
               ].map((row) => (
+                /* Detail row — flexbox spaces label left and value/badge right */
                 <div key={row.label} className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-0">
                   <span className="text-sm text-gray-500">{row.label}</span>
                   {row.badge ? (
@@ -346,6 +356,7 @@ const StockPage = () => {
                 </div>
               ))}
             </div>
+            {/* Close button — flexbox right-aligns */}
             <div className="mt-6 flex justify-end">
               <button onClick={() => setDetailModal(null)} className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 transition-all">Close</button>
             </div>
@@ -353,16 +364,19 @@ const StockPage = () => {
         </div>
       )}
 
+      {/* Delete confirmation modal — flexbox centers modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setDeleteConfirm(null)}>
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm animate-[scaleIn_0.2s_ease-out]" onClick={(e) => e.stopPropagation()}>
             <div className="text-center mb-5">
+              {/* Warning icon — flexbox centers SVG inside circle */}
               <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <svg className="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1">Confirm Delete</h3>
               <p className="text-sm text-gray-500">Are you sure you want to delete stock status for <strong className="text-gray-700">{deleteConfirm.product?.name}</strong>?</p>
             </div>
+            {/* Modal buttons — flexbox centers Cancel and Delete */}
             <div className="flex justify-center gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all">Cancel</button>
               <button onClick={() => handleDelete(deleteConfirm._id)} className="px-5 py-2.5 bg-gradient-to-r from-red-600 to-red-500 text-white rounded-xl text-sm font-medium hover:from-red-500 hover:to-red-400 transition-all shadow-lg shadow-red-600/20">Delete</button>

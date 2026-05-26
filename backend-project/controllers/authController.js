@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { encryptPassword, comparePassword } = require('../utils/encrypt');
@@ -75,4 +76,52 @@ const logoutUser = (req, res) => {
   res.json({ message: 'Logged out successfully' });
 };
 
-module.exports = { registerUser, loginUser, getMe, logoutUser };
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No account with that email' });
+    }
+
+    const resetToken = crypto.randomInt(100000, 999999).toString();
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+    user.resetPasswordUsed = false;
+    await user.save();
+
+    res.json({ message: 'Reset token generated', resetToken });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() },
+    });
+    if (!user) {
+      const usedUser = await User.findOne({ resetPasswordToken: token });
+      if (usedUser) {
+        if (usedUser.resetPasswordUsed) {
+          return res.status(400).json({ message: 'This pin has already been used. Please request a new one.' });
+        }
+        return res.status(400).json({ message: 'Token has expired. Please request a new one.' });
+      }
+      return res.status(400).json({ message: 'Invalid token' });
+    }
+
+    user.password = await encryptPassword(password);
+    user.resetPasswordUsed = true;
+    await user.save();
+
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getMe, logoutUser, forgotPassword, resetPassword };

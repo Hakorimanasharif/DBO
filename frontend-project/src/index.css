@@ -1,4 +1,4 @@
-/* Tailwind CSS imports */
+/* Tailwind CSS imports — injects base styles, component classes, and utility classes */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

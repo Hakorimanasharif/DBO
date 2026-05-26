@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const stockStatusSchema = new mongoose.Schema(
   {
     product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      type: mongoose.Schema.Types.ObjectId,  // Foreign key
+      ref: 'Product',                         // References the Product model
       required: [true, 'Product is required'],
       unique: true,
     },

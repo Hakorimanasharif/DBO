@@ -1,3 +1,4 @@
+// Tailwind CSS configuration — tells Tailwind which files to scan for utility classes
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [

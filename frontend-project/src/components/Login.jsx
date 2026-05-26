@@ -50,6 +50,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
+        {/* Logo — centered with flexbox; items-center & justify-center align icon inside */}
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 mb-4">
             <span className="text-white text-2xl font-bold">D</span>
@@ -61,6 +62,7 @@ const Login = () => {
           <h2 className="text-lg font-semibold text-gray-900 mb-1">Welcome back</h2>
           <p className="text-sm text-gray-500 mb-6">Sign in to your account</p>
           {error && (
+            /* Error banner — flexbox row with gap to align icon and text side by side; flex-shrink-0 prevents icon from shrinking */
             <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl mb-4 text-sm flex items-center gap-2">
               <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               {error}
@@ -94,10 +96,12 @@ const Login = () => {
                 </button>
               </div>
             </div>
+            {/* Forgot password link — flexbox aligns link to the right */}
             <div className="flex items-center justify-end">
               <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Forgot password?</Link>
             </div>
-            <button type="submit" disabled={loading}
+            {/* Submit button — flexbox centers the spinner icon and text horizontally with gap */}
+          <button type="submit" disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
               {loading && (
                 <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

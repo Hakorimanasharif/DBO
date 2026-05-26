@@ -1,6 +1,7 @@
 const StockStatus = require('../models/StockStatus');
 const Product = require('../models/Product');
 
+// READ all stock statuses (populated with product)
 const getStockStatuses = async (req, res) => {
   try {
     const stockStatuses = await StockStatus.find()
@@ -12,6 +13,7 @@ const getStockStatuses = async (req, res) => {
   }
 };
 
+// READ single stock status by ID
 const getStockStatusById = async (req, res) => {
   try {
     const stockStatus = await StockStatus.findById(req.params.id).populate(
@@ -26,6 +28,7 @@ const getStockStatusById = async (req, res) => {
   }
 };
 
+// CREATE a new stock status entry (auto-calculates status)
 const createStockStatus = async (req, res) => {
   try {
     const { product, quantity, lowStockThreshold } = req.body;
@@ -65,6 +68,7 @@ const createStockStatus = async (req, res) => {
   }
 };
 
+// UPDATE stock status by ID (also updates product name/category)
 const updateStockStatus = async (req, res) => {
   try {
     const { quantity, lowStockThreshold, productName, category } = req.body;
@@ -114,6 +118,7 @@ const updateStockStatus = async (req, res) => {
   }
 };
 
+// DELETE a stock status by ID
 const deleteStockStatus = async (req, res) => {
   try {
     const stockStatus = await StockStatus.findByIdAndDelete(req.params.id);

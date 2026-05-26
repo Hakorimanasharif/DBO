@@ -17,10 +17,12 @@ api.interceptors.request.use(
 );
 
 export const authAPI = {
-  login: (data) => api.post('/auth/login', data),       // Login user
-  register: (data) => api.post('/auth/register', data),  // Register new user
-  getMe: () => api.get('/auth/me'),                      // Get logged-in user profile
-  logout: () => api.post('/auth/logout'),                // Logout user
+  login: (data) => api.post('/auth/login', data),                // Login user
+  register: (data) => api.post('/auth/register', data),           // Register new user
+  getMe: () => api.get('/auth/me'),                               // Get logged-in user profile
+  logout: () => api.post('/auth/logout'),                         // Logout user
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),  // Request reset token
+  resetPassword: (data) => api.post('/auth/reset-password', data),    // Reset password with token
 };
 
 export const productAPI = {

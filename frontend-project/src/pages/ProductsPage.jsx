@@ -32,13 +32,18 @@ const ProductsPage = () => {
 
   const resetForm = () => setForm({ name: '', category: 'Electronics', quantity: '', unitPrice: '' });
 
+  const PRODUCT_NAME_REGEX = /^[a-zA-Z0-9\s\-'.,()]+$/;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) { toast.error('Product name is required'); return; }
+    const name = form.name.trim();
+    if (!name) { toast.error('Product name is required'); return; }
+    if (!PRODUCT_NAME_REGEX.test(name)) { toast.error('Special characters (!@#$%^*_+={}[]|\\:;"<>?~`) are not allowed in product name'); return; }
     const qty = Number(form.quantity);
     const price = Number(form.unitPrice);
     if (qty < 0) { toast.error('Quantity cannot be negative'); return; }
     if (price < 0) { toast.error('Unit price cannot be negative'); return; }
+    if (products.some((p) => p.name.toLowerCase() === name.toLowerCase())) { toast.error('A product with this name already exists'); return; }
     setSubmitting(true);
     try {
       await productAPI.create({ name: form.name, category: form.category, stockQuantity: qty, price });  // Create new product
@@ -98,11 +103,13 @@ const ProductsPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header — stacks vertically on mobile, row on sm: screens */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Products</h1>
           <p className="text-sm text-gray-500 mt-1">{products.length} product{products.length !== 1 ? 's' : ''} registered</p>
         </div>
+        {/* Action button — flexbox centers icon and label */}
         <button onClick={() => { setShowForm(!showForm); resetForm(); }}
           className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-600/20 self-start text-sm">
           {showForm ? (
@@ -115,6 +122,7 @@ const ProductsPage = () => {
 
       {showForm && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {/* Section title — flexbox row aligns accent bar and heading */}
           <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />
             New Product
@@ -142,9 +150,10 @@ const ProductsPage = () => {
               <input type="number" min="0" step="0.01" name="unitPrice" value={form.unitPrice} onChange={handleFormChange} placeholder="0"
                 className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" required />
             </div>
-            <div className="flex items-end gap-3 sm:col-span-2 lg:col-span-4">
+            {/* Button row — stacks vertically on mobile, row on sm: screens */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 sm:col-span-2 lg:col-span-4">
               <button type="submit" disabled={submitting}
-                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
+                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
                 {submitting && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
                 {submitting ? 'Saving...' : 'Save Product'}
               </button>
@@ -158,6 +167,7 @@ const ProductsPage = () => {
       )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        {/* Search bar — stacks vertically on mobile, row on sm: screens */}
         <div className="p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-4">
           <div className="relative flex-1 max-w-md">
             <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -180,7 +190,7 @@ const ProductsPage = () => {
                   { key: null, label: 'Total Price' },
                 ].map((col) => (
                   <th key={col.key || col.label}
-                    className={`px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
+                    className={`px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
                     onClick={() => col.key && handleSort(col.key)}>
                     <span className="inline-flex items-center gap-0.5">
                       {col.label}
@@ -202,20 +212,21 @@ const ProductsPage = () => {
               ) : (
                 paginated.map((p, idx) => (
                   <tr key={p._id} className="hover:bg-gray-50/60 transition-colors even:bg-gray-50/30">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">#{p._id.slice(-6)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{p.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-mono">#{p._id.slice(-6)}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{p.name}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-indigo-50 text-indigo-700">{p.category || 'General'}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.stockQuantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF(p.price)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF((p.price || 0) * (p.stockQuantity || 0))}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{p.stockQuantity}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF(p.price)}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF((p.price || 0) * (p.stockQuantity || 0))}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+        {/* Pagination — flexbox spaces page info left and buttons right */}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
             <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>

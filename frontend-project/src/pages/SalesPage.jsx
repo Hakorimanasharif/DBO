@@ -11,7 +11,8 @@ const SalesPage = () => {
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({ product: '', quantity: '', unitPrice: '', totalPrice: '0' });
-  const [saleDate, setSaleDate] = useState(new Date().toISOString().split('T')[0]);
+  const todayStr = new Date().toISOString().split('T')[0];
+  const [saleDate, setSaleDate] = useState(todayStr);
   const [search, setSearch] = useState('');
   const [sortField, setSortField] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
@@ -57,9 +58,10 @@ const SalesPage = () => {
       toast.error(`Insufficient stock. Available: ${selectedProduct.stockQuantity}`);
       return;
     }
+    if (saleDate > todayStr) { toast.error('Sale date cannot be in the future'); return; }
     setSubmitting(true);
     try {
-      await saleAPI.create({ product: form.product, quantity: qty, customerName: '' });  // Record new sale
+      await saleAPI.create({ product: form.product, quantity: qty, customerName: '', saleDate: `${saleDate}T${new Date().toLocaleTimeString('en-GB', { hour12: false })}` });  // Record new sale
       toast.success('Sale recorded successfully');
       setForm({ product: '', quantity: '', unitPrice: '', totalPrice: '0' });
       setShowForm(false);
@@ -121,6 +123,7 @@ const SalesPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header row — stacks vertically on mobile (flex-col), side by side at sm: (sm:flex-row); responsive breakpoint sm: */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Sales</h1>
@@ -128,6 +131,7 @@ const SalesPage = () => {
             Today's revenue: <span className="font-semibold text-gray-800">{formatRWF(todayTotal)}</span>
           </p>
         </div>
+        {/* Action button — flexbox row centers icon and label */}
         <button onClick={() => setShowForm(!showForm)}
           className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-indigo-600/20 self-start text-sm">
           {showForm ? (
@@ -140,6 +144,7 @@ const SalesPage = () => {
 
       {showForm && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          {/* Section title — flexbox row aligns accent bar and heading */}
           <h2 className="text-lg font-semibold text-gray-900 mb-5 flex items-center gap-2">
             <span className="w-1.5 h-6 bg-indigo-500 rounded-full" />
             Record Sale
@@ -161,9 +166,9 @@ const SalesPage = () => {
                 className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Sales Date</label>
-              <input type="date" value={saleDate} onChange={(e) => setSaleDate(e.target.value)}
-                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-sm text-gray-500" readOnly />
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Sales Date <span className="text-red-400">*</span></label>
+              <input type="date" value={saleDate} onChange={(e) => setSaleDate(e.target.value)} max={todayStr}
+                className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" required />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Unit Price (RWF)</label>
@@ -176,9 +181,9 @@ const SalesPage = () => {
                 {form.totalPrice ? formatRWF(Number(form.totalPrice)) : 'RWF 0'}
               </div>
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end col-span-1 sm:col-span-2 lg:col-span-4">
               <button type="submit" disabled={submitting}
-                className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
+                className="w-full sm:w-auto bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 hover:to-green-500 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 text-sm">
                 {submitting && <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>}
                 {submitting ? 'Saving...' : 'Record Sale'}
               </button>
@@ -188,16 +193,19 @@ const SalesPage = () => {
       )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="relative flex-1 max-w-md">
+          {/* Search bar area — stacks vertically on mobile, row on sm: screens (flex-col sm:flex-row) */}
+          <div className="p-4 sm:px-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-4">
+            {/* Search input — flex-1 takes remaining width */}
+            <div className="relative flex-1 max-w-md">
             <svg className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             <input type="text" placeholder="Search sales..."
               value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               className="w-full pl-10 pr-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" />
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+            {/* Date picker — flexbox row aligns label and input */}
+            <div className="flex items-center gap-2 text-sm text-gray-500">
             <span className="text-gray-400">Date:</span>
-            <input type="date" value={saleDate} onChange={(e) => { setSaleDate(e.target.value); setPage(1); }}
+            <input type="date" value={saleDate} onChange={(e) => { setSaleDate(e.target.value); setPage(1); }} max={todayStr}
               className="px-3.5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 text-sm transition-all" />
           </div>
         </div>
@@ -213,7 +221,7 @@ const SalesPage = () => {
                   { key: 'totalPrice', label: 'Total' },
                 ].map((col) => (
                   <th key={col.key || col.label}
-                    className={`px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
+                    className={`px-4 sm:px-6 py-3.5 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider ${col.key ? 'cursor-pointer hover:text-gray-600 group select-none' : ''}`}
                     onClick={() => col.key && handleSort(col.key)}>
                     <span className="inline-flex items-center gap-0.5">
                       {col.label}
@@ -235,25 +243,27 @@ const SalesPage = () => {
               ) : (
                 paginated.map((s) => (
                   <tr key={s._id} className="hover:bg-gray-50/60 transition-colors even:bg-gray-50/30">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <span className="inline-flex items-center gap-1.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-gray-300" />
                         {new Date(s.saleDate).toLocaleTimeString()}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF((s.totalPrice || 0) / (s.quantity || 1))}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF(s.totalPrice)}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{s.product?.name || 'Deleted'}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{s.quantity}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-700">{formatRWF((s.totalPrice || 0) / (s.quantity || 1))}</td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{formatRWF(s.totalPrice)}</td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
         </div>
+        {/* Pagination — flexbox spaces page info left and buttons right */}
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
             <p className="text-sm text-gray-500">Page {page} of {totalPages}</p>
+            {/* Buttons — flexbox row with gap */}
             <div className="flex gap-2">
               <button disabled={page <= 1} onClick={() => setPage(page - 1)}
                 className="px-3.5 py-2 border border-gray-200 rounded-xl text-sm font-medium text-gray-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-all">Previous</button>
